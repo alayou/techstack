@@ -1,0 +1,11 @@
+[Unit]
+Description=techstack
+After=network.target
+
+[Service]
+WorkingDirectory=/data/techstack
+ExecStart=/data/techstack/techstack
+ExecStop=pkill techstack
+
+[Install]
+WantedBy=multi-user.target
