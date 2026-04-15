@@ -1,128 +1,133 @@
 # Techstack
 
-[中文 README](README.zh-CN.md)
+[English README](README.en.md)
 
-Techstack is a repository intelligence and AI-governance service for teams that do not want AI to silently drag projects into unfamiliar frameworks. It imports public repositories, extracts dependencies, syncs package metadata, and generates structured technical analysis. Its product intent is explicit: constrain agents to the developer's existing stack, force understanding over blind generation, reject black-box engineering, and let AI write code only within the team's current knowledge boundary.
+Techstack 是一个面向受约束 AI 开发流程的仓库认知与技术栈治理服务。它可以导入公共仓库、提取依赖、同步包元数据、生成结构化技术分析，但它的产品目标并不是让 AI 随意替你选择技术路线。它的核心立场很明确：把 Agent 约束在开发者已掌握的技术栈里，用 AI 倒逼理解而不是绕过理解，拒绝技术黑箱，让 AI 只在团队认知边界以内编写代码。
 
-## Product Intent
+## 项目初衷
 
-- Keep AI inside the stack a developer or team already understands.
-- Turn dependencies, repo structure, and technical decisions into something inspectable before code generation.
-- Use AI as an amplifier for learning and implementation, not as a shortcut around understanding.
-- Make agent integrations boundary-aware: an agent should read the team's known stack before it writes code.
+- 让 AI 只在开发者或团队已经理解的技术栈内工作。
+- 在代码生成之前，把依赖、目录结构、核心 API 和技术选择变成可检查的信息。
+- 把 AI 当成学习和实现的放大器，而不是替代理解的黑箱。
+- 为 Agent 提供“边界感”：先理解团队已有技术栈，再开始写代码。
 
-## Current Status
+## 当前状态
 
-Techstack is not finished yet. The current repository is the minimum viable version of the product.
+这个项目目前还没有完成，当前仓库提供的是最小可用版本（MVP）。
 
-Today, the system is mainly focused on four things:
+现阶段主要聚焦在四件事：
 
-- importing public repositories into a unified system
-- building a global package catalog across multiple ecosystems
-- extracting real dependency and stack signals from codebases
-- generating structured AI-readable repository analysis for later agent use
+- 把公共仓库导入到统一系统中
+- 建立跨生态的全局包目录
+- 从代码仓库中提取真实依赖和技术栈信号
+- 生成可供后续 Agent 使用的结构化 AI 仓库分析
 
-This means the current release already establishes the data layer and stack-boundary model, but it is not yet the full product vision for agent-native development workflows.
+也就是说，现在这一版已经把“数据层”和“技术栈边界”先搭起来了，但距离完整的 Agent 原生开发工作流产品还差后续能力建设。
 
-## What It Does
+## 这个项目在做什么
 
-- Maintains a global package catalog for `npm`, `golang`, `pypi`, and `cargo`.
-- Imports public GitHub repositories into the system.
-- Clones repositories with `go-git` and scans dependencies with `osv-scalibr`.
-- Tracks repo dependencies and links them to the internal package catalog.
-- Runs asynchronous jobs for repository import and AI analysis.
-- Generates structured repo reports through an OpenAI-compatible LLM endpoint.
-- Serves an HTTP API and an embedded static web UI from the same binary.
-- Supports login-based access and optional AK/SK signing for agent or tool integration.
+- 维护全局依赖库目录，支持 `npm`、`golang`、`pypi`、`cargo`
+- 导入公共 GitHub 仓库
+- 使用 `go-git` 克隆仓库，使用 `osv-scalibr` 扫描依赖
+- 建立“仓库依赖 -> 全局包目录”的索引关系
+- 通过异步任务完成仓库导入与 AI 分析
+- 通过 OpenAI 兼容接口生成结构化技术报告
+- 同一个二进制同时提供 HTTP API 和嵌入式静态 Web 界面
+- 支持登录鉴权，也支持 AK/SK 签名，方便 Agent 或自动化系统接入
 
-## Roadmap
+## 后续规划
 
-The long-term direction is to turn Techstack from a repository analysis service into a practical stack-governance layer for code agents.
+Techstack 的长期目标，不只是做仓库分析，而是成为代码 Agent 可直接使用的技术栈治理层。
 
-Planned work includes:
+后续计划包括：
 
-- adding an MCP service layer so IDEs, agents, and automation tools can query stack knowledge through a standard interface
-- letting agents discover high-quality packages and repositories automatically, while still keeping developers in control of adoption
-- allowing developers to favorite packages and repositories as explicit preference signals
-- classifying AI-related technical-stack repositories into clearer categories for search, recommendation, and governance
-- connecting repository intelligence to real development workflows, including project-oriented skill generation for code agents
-- syncing and updating technical-stack data and developer preferences in near real time
-- making code agents prefer developer-approved or personally favored packages and repositories when generating code
+- 增加 MCP 服务层，让 IDE、Agent 和自动化工具通过标准协议读取技术栈知识
+- 让 Agent 自动发现优秀的包和仓库，但是否纳入仍由开发者控制
+- 支持开发者收藏项目或包，把收藏行为作为明确的技术偏好信号
+- 对 AI 技术栈相关仓库做更清晰的归类，便于检索、推荐和治理
+- 对接到具体开发流程中，为 code agent 按项目生成可用 skill
+- 同步并尽量实时更新技术栈数据与开发者技术偏好
+- 让 code agent 在写代码时优先选择开发者偏好的包或仓库
 
-## Development Task Checklist
+## 开发任务清单
 
-The following checklist turns the roadmap into concrete product and engineering work items:
+下面这份清单把上面的方向拆成更具体的产品和工程任务：
 
-- [ ] Add an MCP service layer so code agents, IDEs, and automation tools can query package, repository, preference, and analysis data through a standard protocol.
-- [ ] Support agent-driven discovery of high-quality packages and repositories, with reviewable recommendation results instead of silent adoption.
-- [ ] Add developer favorites for repositories and packages, and use those favorites as explicit preference signals inside the system.
-- [ ] Build classification for AI-related technical-stack repositories so they can be grouped by role, domain, framework, and usage pattern.
-- [ ] Connect repository intelligence to real development workflows, including generating project-oriented skills for code agents from known repos and stack context.
-- [ ] Keep technical-stack knowledge and developer preferences synced and updated in near real time as repos, dependencies, and favorites change.
-- [ ] Make code agents prefer developer-approved or personally favored packages and repositories when generating code.
-- [ ] Link package records with security data sources and produce security analysis so stack decisions include vulnerability and risk signals.
+- [ ] 支持 MCP 服务层，让 code agent、IDE 和自动化工具可以通过标准协议查询包、仓库、偏好和分析结果。
+- [ ] 支持 Agent 自动发现优秀包和仓库，但推荐结果必须可审查，不能静默纳入技术栈。
+- [ ] 支持开发者收藏项目或包，并把收藏行为沉淀为明确的技术偏好信号。
+- [ ] 建立 AI 技术栈相关仓库的归类体系，支持按角色、领域、框架和使用方式进行组织。
+- [ ] 对接到具体开发流程中，基于已知仓库与技术栈上下文，为 code agent 按项目生成可用 skill。
+- [ ] 随着仓库、依赖和收藏数据变化，同步并尽量实时更新技术栈知识与开发者技术偏好。
+- [ ] 让 code agent 在写代码时优先选择开发者认可或个人偏好的包与仓库。
+- [ ] 关联包的安全数据源并生成安全分析，让技术栈决策同时具备漏洞与风险视角。
 
-## Why This Matters For Agents
+## 为什么它适合约束 Agent
 
-The service is designed to become a stack boundary for coding agents.
+这个服务本质上是给 Agent 加一层技术边界。
 
-1. Import repositories that represent your existing engineering practice.
-2. Extract the real dependencies and stack signals from source code.
-3. Let the agent inspect those signals first.
-4. Ask the agent to generate code only inside that already-known technical space.
+1. 先导入能代表你真实工程实践的仓库。
+2. 从源码里提取真实依赖和技术信号。
+3. 让 Agent 先读取这些信号，而不是直接自由发挥。
+4. 让 Agent 只在你已经掌握的技术空间里写代码。
 
-The result is a more deliberate workflow: developers still learn the stack, while the agent accelerates implementation inside a readable and auditable boundary.
+这样带来的结果不是“AI 全权接管”，而是“开发者继续理解技术，AI 在可审计边界内加速实现”。
+## 预览
+![page_packages](./docs/imgs/page_packages.png)
+![page_repos](./docs/imgs/page_repos.png)
+![page_repo_detail](./docs/imgs/page_repo_detail.png)
+![page_task](./docs/imgs/page_task.png)
 
-## Architecture
+## 架构概览
 
-- `daemon/`: service bootstrap, HTTP server startup, worker pool lifecycle.
-- `httpd/`: API handlers, middleware, auth, settings, and HTTP utilities.
-- `httpd/taskmgr/`: async repo import and repo analysis jobs.
-- `pkg/repofs/`: repository clone, in-memory file system conversion, and SCALIBR scanning.
-- `pkg/pkgclient/`: package metadata clients for upstream ecosystems.
-- `model/`: GORM models for users, packages, repos, settings, and tasks.
-- `web/`: embedded static frontend assets served by the backend binary.
+- `daemon/`：服务启动、HTTP Server、Worker Pool 生命周期
+- `httpd/`：API、鉴权、中间件、系统设置、HTTP 工具
+- `httpd/taskmgr/`：仓库导入与仓库分析异步任务
+- `pkg/repofs/`：仓库克隆、内存文件系统、SCALIBR 扫描
+- `pkg/pkgclient/`：上游包生态客户端
+- `model/`：用户、包、仓库、设置、任务等 GORM 模型
+- `web/`：嵌入到二进制中的前端静态资源
 
-## Repo Analysis Pipeline
+## 仓库分析流程
 
-1. A public GitHub repository is imported into the system.
-2. The backend clones the repo into an in-memory file system.
-3. `osv-scalibr` scans the repo with plugins for `go`, `python`, `javascript`, and `rust`.
-4. Dependency records are stored as repo dependencies and linked to internal packages.
-5. An AI analysis task reads repository files through tool-based access and writes back a structured report.
+1. 把一个公共 GitHub 仓库导入系统。
+2. 后端把仓库克隆到内存文件系统。
+3. 使用 `osv-scalibr` 的 `go`、`python`、`javascript`、`rust` 插件扫描依赖。
+4. 依赖被保存为仓库依赖，并尝试映射到内部全局包目录。
+5. AI 分析任务通过工具读取源码与文档，写回结构化分析报告。
 
-The generated report is meant to answer questions such as:
+生成的报告会覆盖这类问题：
 
-- What is this project for?
-- What problem does it solve?
-- What stack and dependencies does it really use?
-- What does the directory structure imply?
-- What are the core APIs, strengths, weaknesses, and appropriate use cases?
+- 这个项目是做什么的
+- 它解决什么问题
+- 它真实使用了哪些技术栈和依赖
+- 目录结构说明了什么
+- 核心 API、优势、限制、适用与不适用场景分别是什么
 
-## Supported Inputs
+## 支持范围
 
-- Dependency ecosystems: `npm`, `golang`, `pypi`, `cargo`
-- Dependency files parsed directly in the codebase: `go.mod`, `package.json`, `pyproject.toml`, `requirements.txt`, `Cargo.toml`
-- Public repository import: currently GitHub repositories only
-- LLM provider: OpenAI-compatible endpoint configured through `llm.baseUrl`, `llm.apiKey`, and `llm.model`
+- 依赖生态：`npm`、`golang`、`pypi`、`cargo`
+- 代码内直接解析的依赖文件：`go.mod`、`package.json`、`pyproject.toml`、`requirements.txt`、`Cargo.toml`
+- 公共仓库导入：当前仅支持 GitHub
+- LLM：通过 `llm.baseUrl`、`llm.apiKey`、`llm.model` 配置 OpenAI 兼容接口
 
-## Quick Start
+## 快速开始
 
-### Requirements
+### 环境要求
 
-- Go toolchain compatible with `go.mod` (`go 1.25.8`)
-- PostgreSQL or another database config you have already validated for this project
-- An OpenAI-compatible LLM endpoint
+- 与 `go.mod` 兼容的 Go 工具链，当前为 `go 1.25.8`
+- PostgreSQL，或你已经验证过能正常跑通本项目的数据库配置
+- 一个 OpenAI 兼容的大模型接口
 
-### Configure
+### 配置
 
-Copy the example config and fill in the required values:
+复制示例配置：
 
 ```bash
 cp config.yml.tpl config.yml
 ```
 
-Minimal example:
+最小示例：
 
 ```yaml
 addr: :8775
@@ -139,49 +144,49 @@ llm:
   model: "MiniMax-M2.7"
 ```
 
-Important fields:
+重点配置项：
 
-- `database.*`: database connection used by GORM.
-- `session_hash_key` and `session_cookie_key`: required for session and cookie signing.
-- `llm.*`: required for AI repo analysis.
-- `debug`: in debug mode the service enables permissive CORS headers. Do not keep this on in production.
+- `database.*`：GORM 使用的数据库连接
+- `session_hash_key`、`session_cookie_key`：会话与 Cookie 签名必须填写
+- `llm.*`：仓库 AI 分析必须填写
+- `debug`：调试模式下会放开宽松的 CORS，生产环境不要开启
 
-### Run
+### 运行
 
-Build and start:
+构建并启动：
 
 ```bash
 go build -o techstack .
 ./techstack daemon
 ```
 
-Or run directly:
+或者直接运行：
 
 ```bash
 go run . daemon
 ```
 
-The sample config listens on `:8775`.
+示例配置默认监听 `:8775`。
 
-### First Startup
+### 首次启动会发生什么
 
-On first startup the service:
+服务第一次启动时会自动：
 
-- runs `AutoMigrate` for all models
-- initializes default system settings
-- creates a default admin account: `admin / techstack`
-- generates `account_key` and `account_secret` for each created user
+- 对所有模型执行 `AutoMigrate`
+- 初始化系统设置
+- 创建默认管理员账号：`admin / techstack`
+- 为每个用户生成 `account_key` 和 `account_secret`
 
-Change the default admin password immediately.
+默认管理员密码必须在首次登录后立即修改。
 
-## API Overview
+## API 概览
 
-Public endpoints:
+公共接口：
 
 - `GET /api/v1/ping`
 - `GET /api/v1/health`
 
-Authentication and profile:
+登录与个人信息：
 
 - `POST /api/v1/c/login`
 - `POST /api/v1/c/signup`
@@ -190,7 +195,7 @@ Authentication and profile:
 - `PUT /api/v1/c/profile`
 - `PUT /api/v1/c/user/password`
 
-Global libraries:
+全局依赖库：
 
 - `GET /api/v1/c/libraries`
 - `POST /api/v1/c/libraries`
@@ -200,7 +205,7 @@ Global libraries:
 - `POST /api/v1/c/libraries/{package_id}/sync-versions`
 - `GET /api/v1/c/libraries/get/purl`
 
-Public repositories and tasks:
+公共仓库与任务：
 
 - `GET /api/v1/c/public-repos`
 - `POST /api/v1/c/public-repos/import`
@@ -209,28 +214,28 @@ Public repositories and tasks:
 - `GET /api/v1/c/tasks/{id}`
 - `POST /api/v1/c/tasks/{id}/retry`
 
-Settings:
+系统设置：
 
 - `GET /api/v1/c/setting`
 - `PUT /api/v1/c/setting`
 - `GET /api/v1/c/setting/basic`
 - `PUT /api/v1/c/setting/basic`
 
-Response conventions:
+返回格式约定：
 
-- List responses are returned as `{"list":[...],"total":N}`.
-- Error responses are returned as `{"code":400,"msg":"...","error":"..."}`.
-- `GET /api/v1/health` returns `health`, `revision`, `version`, and `build_at`.
+- 列表接口返回 `{"list":[...],"total":N}`
+- 错误返回 `{"code":400,"msg":"...","error":"..."}`
+- `GET /api/v1/health` 会返回 `health`、`revision`、`version`、`build_at`
 
-## Basic Usage Example
+## 基本使用示例
 
-Health check:
+健康检查：
 
 ```bash
 curl http://127.0.0.1:8775/api/v1/health
 ```
 
-Login with the bootstrap admin:
+使用默认管理员登录：
 
 ```bash
 curl -X POST http://127.0.0.1:8775/api/v1/c/login \
@@ -238,7 +243,7 @@ curl -X POST http://127.0.0.1:8775/api/v1/c/login \
   -d '{"username":"admin","password":"techstack"}'
 ```
 
-Create a package entry:
+手动录入一个全局包：
 
 ```bash
 curl -X POST http://127.0.0.1:8775/api/v1/c/libraries \
@@ -247,7 +252,7 @@ curl -X POST http://127.0.0.1:8775/api/v1/c/libraries \
   -d '{"name":"gin","purl_type":"golang"}'
 ```
 
-Import a GitHub repository:
+导入一个 GitHub 仓库：
 
 ```bash
 curl -X POST http://127.0.0.1:8775/api/v1/c/public-repos/import \
@@ -256,34 +261,34 @@ curl -X POST http://127.0.0.1:8775/api/v1/c/public-repos/import \
   -d '{"repo_url":"https://github.com/gin-gonic/gin"}'
 ```
 
-Repository import creates async work. Use the task endpoints to inspect progress, failures, and retries.
+仓库导入后会触发异步流程。通过任务接口可以查看进度、失败原因和重试状态。
 
-## Agent Integration
+## Agent 对接
 
-Techstack is intended to sit between the developer and the agent.
+Techstack 的定位不是“让 Agent 无边界写代码”，而是“让 Agent 先理解，再在边界内写代码”。
 
-- A human developer defines the acceptable stack by importing repos and curating packages.
-- The service turns that stack into structured data the agent can query.
-- The agent can then inspect known dependencies, repo analysis, and technical patterns before generating code.
+- 人负责定义可接受的技术栈边界，方式是导入仓库、维护包目录
+- 服务把这些边界转换成可查询的结构化数据
+- Agent 在生成代码前，可以先查询已知依赖、仓库分析、技术模式
 
-For non-browser clients, protected APIs also support AK/SK signing with:
+对于非浏览器客户端，受保护接口还支持 AK/SK 签名：
 
 - `x-aksk-version: 1`
 - `x-access-key`
 - `x-timestamp`
 - `x-signature`
 
-The signature is verified as HMAC-SHA256 over:
+签名校验的原始串格式为：
 
 ```text
 {METHOD}&{PATH}&{sorted_query_params_without_signature}&{timestamp}
 ```
 
-This is useful when integrating external agents or internal automation without relying on browser cookies.
+再对这个字符串做 HMAC-SHA256 校验。这很适合对接外部 Agent、脚本或内部自动化系统。
 
-## Service Mode
+## 服务模式
 
-The binary also supports service management commands:
+二进制还支持作为系统服务安装和管理：
 
 ```bash
 ./techstack service install --config /absolute/path/to/config.yml
@@ -292,11 +297,11 @@ The binary also supports service management commands:
 ./techstack service uninstall --config /absolute/path/to/config.yml
 ```
 
-Passing `--config` explicitly is recommended.
+建议始终显式传入 `--config`。
 
 ## Docker
 
-Build the binary expected by the Dockerfile, then build the image:
+先构建 Dockerfile 所需的二进制，再构建镜像：
 
 ```bash
 go build -o build/techstack .
@@ -306,30 +311,30 @@ docker run --rm -p 8775:8775 \
   techstack:local
 ```
 
-## Cross-Platform Build Script
+## 跨平台构建脚本
 
-The repository includes `build-binary.sh`, which builds:
+仓库内置了 `build-binary.sh`，会产出：
 
 - `build/techstack.exe`
 - `build/techstack-linux`
 - `build/techstack`
 - `build/techstack-linux-arm64`
 
-Example:
+示例：
 
 ```bash
 ./build-binary.sh v0.1.0
 ```
 
-## Production Notes
+## 生产环境注意事项
 
-- Change the default admin password immediately after first login.
-- Replace the example session keys with random values.
-- Set `debug: false` in production.
-- Use real TLS and CORS settings for non-local deployments.
-- Do not treat the AI analysis as ground truth; use it as a structured starting point.
-- The product intent is not "AI can write anything". The intended model is "AI writes inside a known stack, and the developer remains responsible for understanding it".
+- 首次启动后立刻修改默认管理员密码
+- 把示例里的 session key 全部替换成随机值
+- 生产环境设置 `debug: false`
+- 为真实部署配置好 TLS 和 CORS
+- 不要把 AI 分析结果当成绝对事实，它更适合作为结构化起点
+- 这个项目的目标从来不是“AI 会写所有东西”，而是“AI 只在开发者理解范围内写东西，开发者继续对技术负责”
 
 ## License
 
-See [LICENSE](LICENSE).
+详见 [LICENSE](LICENSE)。
