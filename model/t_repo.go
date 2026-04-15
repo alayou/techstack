@@ -68,7 +68,7 @@ func (RepoDependency) TableName() string {
 type RepoTechAnalysis struct {
 	ID         ID     `json:"id,string,omitempty" gorm:"primaryKey;autoIncrement:false"`
 	RepoType   string `json:"repo_type"` // user,public 关联用户仓库还是开放仓库
-	RepoID     int64  `json:"repo_id,string,omitempty" gorm:"index;uniqueIndex:idx_pub_dep_purl"`
+	RepoID     int64  `json:"repo_id,string,omitempty" gorm:"index;"`
 	CommitHash string `json:"commit_hash" gorm:"type:varchar(128);"`
 	Branch     string `json:"branch" gorm:"type:varchar(128);"`
 
