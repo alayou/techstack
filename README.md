@@ -11,6 +11,19 @@ Techstack is a repository intelligence and AI-governance service for teams that 
 - Use AI as an amplifier for learning and implementation, not as a shortcut around understanding.
 - Make agent integrations boundary-aware: an agent should read the team's known stack before it writes code.
 
+## Current Status
+
+Techstack is not finished yet. The current repository is the minimum viable version of the product.
+
+Today, the system is mainly focused on four things:
+
+- importing public repositories into a unified system
+- building a global package catalog across multiple ecosystems
+- extracting real dependency and stack signals from codebases
+- generating structured AI-readable repository analysis for later agent use
+
+This means the current release already establishes the data layer and stack-boundary model, but it is not yet the full product vision for agent-native development workflows.
+
 ## What It Does
 
 - Maintains a global package catalog for `npm`, `golang`, `pypi`, and `cargo`.
@@ -21,6 +34,33 @@ Techstack is a repository intelligence and AI-governance service for teams that 
 - Generates structured repo reports through an OpenAI-compatible LLM endpoint.
 - Serves an HTTP API and an embedded static web UI from the same binary.
 - Supports login-based access and optional AK/SK signing for agent or tool integration.
+
+## Roadmap
+
+The long-term direction is to turn Techstack from a repository analysis service into a practical stack-governance layer for code agents.
+
+Planned work includes:
+
+- adding an MCP service layer so IDEs, agents, and automation tools can query stack knowledge through a standard interface
+- letting agents discover high-quality packages and repositories automatically, while still keeping developers in control of adoption
+- allowing developers to favorite packages and repositories as explicit preference signals
+- classifying AI-related technical-stack repositories into clearer categories for search, recommendation, and governance
+- connecting repository intelligence to real development workflows, including project-oriented skill generation for code agents
+- syncing and updating technical-stack data and developer preferences in near real time
+- making code agents prefer developer-approved or personally favored packages and repositories when generating code
+
+## Development Task Checklist
+
+The following checklist turns the roadmap into concrete product and engineering work items:
+
+- [ ] Add an MCP service layer so code agents, IDEs, and automation tools can query package, repository, preference, and analysis data through a standard protocol.
+- [ ] Support agent-driven discovery of high-quality packages and repositories, with reviewable recommendation results instead of silent adoption.
+- [ ] Add developer favorites for repositories and packages, and use those favorites as explicit preference signals inside the system.
+- [ ] Build classification for AI-related technical-stack repositories so they can be grouped by role, domain, framework, and usage pattern.
+- [ ] Connect repository intelligence to real development workflows, including generating project-oriented skills for code agents from known repos and stack context.
+- [ ] Keep technical-stack knowledge and developer preferences synced and updated in near real time as repos, dependencies, and favorites change.
+- [ ] Make code agents prefer developer-approved or personally favored packages and repositories when generating code.
+- [ ] Link package records with security data sources and produce security analysis so stack decisions include vulnerability and risk signals.
 
 ## Why This Matters For Agents
 

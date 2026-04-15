@@ -43,7 +43,7 @@ jobs:
       - name: Build Linux amd64
         run: |
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
-            -ldflags "-X main.version={{ steps.version.outputs.version }} -X main.revision=${{ steps.version.outputs.revision }} -X main.builtAt=${{ steps.version.outputs.built_at }}" \
+            -ldflags "-X main.version=${{ steps.version.outputs.version }} -X main.revision=${{ steps.version.outputs.revision }} -X main.builtAt=${{ steps.version.outputs.built_at }}" \
             -o "build/${{ env.PROJECT_NAME }}-linux-amd64" \
             ${{ env.PACKAGE_NAME }}
 
