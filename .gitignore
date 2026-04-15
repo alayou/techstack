@@ -36,3 +36,8 @@ dist/
 .DS_Store
 config.yml
 config.yaml
+__debug*
+*.duckdb
+*.csv
+*.tar.gz
+*.wal
