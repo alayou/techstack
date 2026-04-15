@@ -1,0 +1,16 @@
+.DS_Store
+.git
+.github
+.vscode
+build
+dist
+docs
+pydata
+__debug*
+output.log
+*.duckdb
+*.csv
+*.tar.gz
+*.wal
+config.yml
+config.yaml

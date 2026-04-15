@@ -23,7 +23,7 @@ type Database struct {
 }
 
 type Cfg struct {
-	ConfigFile string `json:"-" yaml:"-"`
+	ConfigFile string `json:"-" yaml:"-" env:"TECHSTACK_CONFIG"`
 	Addr       string `json:"addr" yaml:"addr"`
 	Debug      bool   `json:"debug" yaml:"debug"`
 

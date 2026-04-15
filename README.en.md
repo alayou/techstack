@@ -302,15 +302,28 @@ Passing `--config` explicitly is recommended.
 
 ## Docker
 
-Build the binary expected by the Dockerfile, then build the image:
+Build the image directly. The `Dockerfile` now compiles the Go binary inside the image, so it no longer depends on a host-side `build/techstack` artifact:
 
 ```bash
-go build -o build/techstack .
 docker build -t techstack:local .
+
+cp config.yml.tpl docker.config.yml
+# Fill in database.dsn, session keys, llm.apiKey, and other required values.
+
 docker run --rm -p 8775:8775 \
-  -v "$(pwd)/config.yml:/opt/techstack/config.yml" \
+  -v "$(pwd)/docker.config.yml:/etc/techstack/config.yml:ro" \
+  -v techstack-data:/var/lib/techstack \
   techstack:local
 ```
+
+Notes:
+
+- The image reads `/etc/techstack/config.yml` by default.
+- A template file is included at `/etc/techstack/config.yml.tpl`.
+- To override the config path, pass `-e TECHSTACK_CONFIG=/your/path/config.yml`.
+- Inside containers, `cache_dir: /var/lib/techstack/cache` is the recommended setting.
+- The Docker build stage defaults to `GOPROXY=https://goproxy.cn,direct` and `GOSUMDB=sum.golang.google.cn`.
+- To use a different Go module source, pass `--build-arg GOPROXY=... --build-arg GOSUMDB=...` when building.
 
 ## Cross-Platform Build Script
 

@@ -3,4 +3,4 @@
 
 package global
 
-const DefaultConfigPath = "/techstack/config.yaml"
+const DefaultConfigPath = "/etc/techstack/config.yml"

@@ -301,15 +301,28 @@ Techstack 的定位不是“让 Agent 无边界写代码”，而是“让 Agent
 
 ## Docker
 
-先构建 Dockerfile 所需的二进制，再构建镜像：
+直接构建镜像即可，`Dockerfile` 会在镜像内完成 Go 编译，不再依赖宿主机的 `build/techstack`：
 
 ```bash
-go build -o build/techstack .
 docker build -t techstack:local .
+
+cp config.yml.tpl docker.config.yml
+# 按实际环境修改 database.dsn、session key、llm.apiKey 等配置
+
 docker run --rm -p 8775:8775 \
-  -v "$(pwd)/config.yml:/opt/techstack/config.yml" \
+  -v "$(pwd)/docker.config.yml:/etc/techstack/config.yml:ro" \
+  -v techstack-data:/var/lib/techstack \
   techstack:local
 ```
+
+说明：
+
+- 镜像默认读取 `/etc/techstack/config.yml`
+- 镜像内自带模板文件 `/etc/techstack/config.yml.tpl`
+- 如需覆盖配置路径，可传入 `-e TECHSTACK_CONFIG=/your/path/config.yml`
+- 容器内推荐把 `cache_dir` 配置为 `/var/lib/techstack/cache`
+- Dockerfile 构建阶段默认使用 `GOPROXY=https://goproxy.cn,direct` 与 `GOSUMDB=sum.golang.google.cn`
+- 如需改回其他源，可在构建时传入 `--build-arg GOPROXY=... --build-arg GOSUMDB=...`
 
 ## 跨平台构建脚本
 
