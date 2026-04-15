@@ -1,0 +1,16 @@
+[project]
+name = "techstack-pydata"
+version = "0.1.0"
+description = "使用python获取相关包信息数据"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "bitarray>=3.8.1",
+    "duckdb>=1.5.1",
+    "fastapi>=0.135.3",
+    "python-dotenv>=1.2.2",
+    "python-multipart>=0.0.24",
+    "requests>=2.33.1",
+    "uuid>=1.30",
+    "uvicorn>=0.44.0",
+]
