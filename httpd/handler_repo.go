@@ -325,10 +325,12 @@ func (s *Server) GetPublicRepo(w http.ResponseWriter, req *http.Request) {
 	Ok(w, response)
 }
 
-// AnalysisPublicRepo 创建公共仓库分析任务
-// 路由: POST /api/v1/c/public-repos/{id}/analysis
+// AnalysisPublicRepo 根据仓库状态创建导入或分析任务
+// 路由: GET /api/v1/c/public-repos/{id}/analysis
 // 鉴权: 登录用户
-// 条件: import_status 完成 且 analysis_status 为 RepoStatusWaiting 时可创建
+// 条件:
+//   - import_status 为 RepoStatusWaiting 时，创建导入任务
+//   - import_status 为 RepoStatusSuccess 且 analysis_status 为 RepoStatusWaiting 时，创建分析任务
 func (s *Server) AnalysisPublicRepo(w http.ResponseWriter, req *http.Request) {
 	userID := UidGet(req)
 	if userID == 0 {
@@ -357,28 +359,43 @@ func (s *Server) AnalysisPublicRepo(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// 检查 import_status 是否已完成
+	// import_status 为 waiting 时，优先创建导入任务
+	if repo.ImportStatus == model.RepoStatusWaiting {
+		if err := dao.Repo.UpdateRepoImportStatus(repoID, model.RepoStatusPending); err != nil {
+			Bad(w, "更新导入状态失败")
+			return
+		}
+
+		task, err := taskmgr.CreateTask(userID, taskmgr.TaskTypeRepoImport, repoID)
+		if err != nil {
+			_ = dao.Repo.UpdateRepoImportStatus(repoID, model.RepoStatusWaiting)
+			Bad(w, "创建导入任务失败")
+			return
+		}
+
+		Ok(w, task)
+		return
+	}
+
+	// 导入未完成时，不允许继续创建分析任务
 	if repo.ImportStatus != model.RepoStatusSuccess {
-		Bad(w, "仓库导入未完成，无法创建分析任务")
+		Bad(w, "仓库导入未完成，当前状态无法创建任务")
 		return
 	}
 
-	// 检查 analysis_status 是否为等待状态
+	// analysis_status 为 waiting 时，创建分析任务
 	if repo.AnalysisStatus != model.RepoStatusWaiting {
-		Bad(w, "当前状态不允许创建分析任务")
+		Bad(w, "当前状态不允许创建任务")
 		return
 	}
 
-	// 更新 analysis_status 为 pending
 	if err := dao.Repo.UpdateRepoAnalysisStatus(repoID, model.RepoStatusPending); err != nil {
 		Bad(w, "更新分析状态失败")
 		return
 	}
 
-	// 创建分析任务
 	task, err := taskmgr.CreateRepoAnalysisTask(userID, taskmgr.TaskTypeAnalysisPublicRepo, repoID, "", nil)
 	if err != nil {
-		// 回滚状态
 		_ = dao.Repo.UpdateRepoAnalysisStatus(repoID, model.RepoStatusWaiting)
 		Bad(w, "创建分析任务失败")
 		return

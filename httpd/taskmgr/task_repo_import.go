@@ -40,7 +40,7 @@ func failTaskAndRepo(task *model.BackgroundTask, progress int, message string) {
 		// 更新仓库状态
 		repoUpdates := map[string]interface{}{}
 		if ty == TaskTypeAnalysisPublicRepo {
-			repoUpdates["analysis_stutas"] = model.RepoStatusFailed
+			repoUpdates["analysis_status"] = model.RepoStatusFailed
 			repoUpdates["last_analyzed_at"] = now.Unix()
 		}
 		if ty == TaskTypeRepoImport {
@@ -135,14 +135,21 @@ func executeRepoImportTask(task *model.BackgroundTask) (err error) {
 
 	err = dao.Repo.UpdateRepoImportStatus(repoID, model.RepoStatusSuccess)
 	if err != nil {
-		return fmt.Errorf("更新仓库状态失败: %v", err)
+		return fmt.Errorf("更新仓库导入状态失败: %v", err)
 	}
-	err = dao.Repo.UpdateRepoImportStatus(repoID, model.RepoStatusSuccess)
+
+	err = dao.Repo.UpdateRepoAnalysisStatus(repoID, model.RepoStatusPending)
 	if err != nil {
-		return fmt.Errorf("更新任务状态失败: %v", err)
+		return fmt.Errorf("更新仓库分析状态失败: %v", err)
 	}
-	//  自动创建仓库分析任务
-	go CreateRepoAnalysisTask(task.UserID, TaskTypeAnalysisPublicRepo, task.PubRepoID, commitHash, gitFs) // nolint
+
+	// 自动创建仓库分析任务，避免分析状态长期停留在 waiting
+	_, err = CreateRepoAnalysisTask(task.UserID, TaskTypeAnalysisPublicRepo, task.PubRepoID, commitHash, gitFs)
+	if err != nil {
+		_ = dao.Repo.UpdateRepoAnalysisStatus(repoID, model.RepoStatusWaiting)
+		return fmt.Errorf("创建分析任务失败: %v", err)
+	}
+
 	return nil
 }
 

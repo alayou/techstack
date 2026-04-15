@@ -59,7 +59,7 @@ func ImportCrates(ctx context.Context, c *cli.Command) (err error) {
 		log.Err(err).Str("ConfigFile", global.Config.ConfigFile).Msg("cannot load config file.")
 		return err
 	}
-	logger.InitLogger("debug", "")
+	logger.InitLogger("error", "")
 
 	// 解析命令行参数
 	sourceType := ImportSourceType(c.String("source"))
