@@ -3,10 +3,7 @@ package httpd
 import (
 	"context"
 	"embed"
-	"fmt"
-	"maps"
 	"net/http"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -55,9 +52,6 @@ func NewServer(ctx context.Context, cache cache.Cache, webFS embed.FS) *Server {
 }
 
 func (s *Server) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	// fileServer := http.FileServer(http.FS(s.webFS))
-	fmt.Println("req.URL.Path=", req.URL.Path)
-	fmt.Println("Maps", strings.Join(slices.Collect(maps.Keys(s.webFsMapFiles)), "\n"))
 	if req.URL.Path == "/" {
 		req.URL.Path = "/index.html"
 	}
