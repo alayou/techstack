@@ -15,6 +15,7 @@ import (
 const (
 	TaskTypeRepoImport         = "repo_import"          // 导入项目
 	TaskTypeAnalysisPublicRepo = "analysis_public_repo" // 分析公共仓库
+	TaskTypeSyncGolangTrend    = "sync_golang_trend"    // 同步 golang 包趋势
 )
 
 type TaskExecutor func(task *model.BackgroundTask) error
@@ -75,6 +76,9 @@ func worker(ctx context.Context) {
 			if task != nil {
 				tryEnqueueTask(task)
 			}
+		case <-time.After(10*time.Minute + time.Second*20):
+			// 触发 golang 趋势包同步
+			_, _ = CreateTask(0, TaskTypeSyncGolangTrend, 0)
 		}
 	}
 }
@@ -177,4 +181,5 @@ func startTaskAsync(task *model.BackgroundTask) {
 func init() {
 	RegisterTaskExecutor(TaskTypeRepoImport, executeRepoImportTask)
 	RegisterTaskExecutor(TaskTypeAnalysisPublicRepo, executeAnalysisPublicRepoTask)
+	RegisterTaskExecutor(TaskTypeSyncGolangTrend, executeSyncGolangTrendTask)
 }

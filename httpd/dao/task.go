@@ -85,3 +85,34 @@ func ResetRunningTasksToWaiting() error {
 			Update("status", model.TaskStatusWaiting).Error
 	})
 }
+
+// GetLastSuccessfulSyncTrendTask 获取上次成功完成的同步趋势任务
+// 返回任务的完成时间，如果没有找到则返回 0
+func GetLastSuccessfulSuccessfulTrendTask(taskType string) int64 {
+	var task model.BackgroundTask
+	err := gdb.Where("task_type = ? AND status = ?", taskType, model.TaskStatusSuccess).
+		Order("finished_at DESC").
+		First(&task).Error
+
+	if err != nil {
+		return 0
+	}
+	return task.FinishedAt
+}
+
+// HasTrendTypeSyncedInDays 检查指定趋势类型在指定天数内是否同步成功
+// 通过检查 message 字段中是否包含趋势类型标识来判断
+func HasTrendTypeSyncedInDays(taskType string, trendType string, days int) bool {
+	threshold := time.Now().AddDate(0, 0, -days).Unix()
+
+	var count int64
+	err := gdb.Model(&model.BackgroundTask{}).
+		Where("task_type = ? AND status = ? AND finished_at >= ?", taskType, model.TaskStatusSuccess, threshold).
+		Where("message LIKE ?", "%"+trendType+"%").
+		Count(&count).Error
+
+	if err != nil {
+		return false
+	}
+	return count > 0
+}
